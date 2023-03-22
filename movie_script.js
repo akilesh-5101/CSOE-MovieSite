@@ -27,18 +27,8 @@ for(let i=0; i<3; i++){
         movie.appendChild(div_sea_detail);
     }
 
-// drop_epi()
 
 
-// To implement marcar tools
-w_div = document.querySelector('#showname-0');
-w_div.addEventListener('click', checkMarc);
-
-b_div = document.querySelector('#showname-1');
-b_div.addEventListener('click', checkMarc);
-
-g_div = document.querySelector('#showname-2');
-g_div.addEventListener('click', checkMarc);
 
 // To show time watched
 const head_time = document.querySelector('.container');
@@ -111,13 +101,13 @@ function drop_epi(name, det, show, season_no){
             desc_date.classList.add('episodeSpan', 'small');
             desc_pass.classList.add('episodeP','small');
 
-            // Click marcar checkbox
-
-
-            // Click an indiv checkbox
+            // Marcar implement indiv check and time
+            check_box.addEventListener('click', checkMarc);
+            
+            // Click an indiv checkbox time
             const indiv_check = document.querySelectorAll('.indivtool');
             for(let ele of indiv_check){
-                ele.addEventListener('click', onCheckTime);
+                ele.addEventListener('click', marc_or_indiv_time);
             }
         }
 
@@ -162,24 +152,28 @@ function onClick(event){
 }
 
 function checkMarc(event){
-    const n = event.currentTarget.id.split('-')[1];
-    const indiclass = '.indivtool-'+n;
-    const marcid = '#todo-'+n
-    const marc_check = document.querySelector(marcid);
-    const indi = document.querySelectorAll(indiclass);
-    if(marc_check.checked == true){
-        for (let i of indi){
-            i.checked = true;
+    const n = event.currentTarget;
+    console.log('Bro what');
+    const id = n.id.split('-')[1];
+    const indi = document.querySelectorAll('.indivtool');
+    for (let i of indi){
+        if (i.id.split('-')[1] == id){
+            if(n.checked == true){
+                i.checked = true;
+            }
+            else{
+                i.checked = false;
+            }
         }
     }
-    else{
-        for (let i of indi){
-            i.checked = false;
-        }
-    }
+    
 }
- 
-function onCheckTime(event){
+
+function marc_or_indiv_time(event){
+    
+}
+
+function onCheckTime(){
     const times_check = event.currentTarget;
     const show = times_check.id.split('-')[1];
     const season = times_check.id.split('-')[2];
