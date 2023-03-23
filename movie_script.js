@@ -1,8 +1,8 @@
 var data = JSON.parse(JSON.stringify(TV_SHOWS));
-clickW = 0;
-clickB = 0;
-clickG = 0;
 
+var emo = String.fromCodePoint(0x1F604);
+alert('Greetings Madam '+ emo+ '! I hereby declare that the work before you is authentic and not copied from other sources.');
+// Front END
 witcher_ep_drop = document.querySelector('#witcher');
 witcher_ep_drop.addEventListener('click', onClick);
 
@@ -28,7 +28,15 @@ for(let i=0; i<3; i++){
     }
 
 
+// To implement marcar tools
+// w_div = document.querySelector('#showname-0');
+// w_div.addEventListener('click', checkMarc);
 
+// b_div = document.querySelector('#showname-1');
+// b_div.addEventListener('click', checkMarc);
+
+// g_div = document.querySelector('#showname-2');
+// g_div.addEventListener('click', checkMarc);
 
 // To show time watched
 const head_time = document.querySelector('.container');
@@ -45,24 +53,30 @@ time_div.appendChild(time_head);
 time_div.appendChild(time_dhm);
 
 
+
+// BACKEND
+clickW = 0;
+clickB = 0;
+clickG = 0;
+time_checked = [];
+
 // To create dropdown for episodes 
 function drop_epi(name, det, show, season_no){
 // Season Name
         const seas = document.createElement('h2');
         const marcar = document.createElement('label');
         const check_box = document.createElement("input");
+        const classid = 'indivtool-'+show+'-'+season_no;
         seas.textContent = 'Season ' + season_no;
         check_box.type = "checkbox";
-        check_box.id = "todo-"+show;
-        marcar.for =  'todo-'+show;
+        check_box.id = "marc-"+show+'-'+season_no;
         marcar.innerHTML = 'Marcar todos';
         marcar.style.fontSize = 18;
         name.appendChild(seas);
         name.appendChild(check_box);
         name.appendChild(marcar);
 
-
-// Episode Image and Description
+        // Episode Image and Description
         for(let i=0;i<data[show].seasons[season_no-1].length;i++){
             const epi = document.createElement('div');
             const img = document.createElement('img');
@@ -71,11 +85,10 @@ function drop_epi(name, det, show, season_no){
             const desc_title = document.createElement('h3');
             const desc_date = document.createElement('span');
             const desc_pass = document.createElement('p');
-
             img.src= data[show].seasons[season_no-1][i].image;
             desc_check.type = 'checkbox';
-            desc_check.classList.add('indivtool');
-            desc_check.id = 'indivtool-'+show+'-'+season_no+'-'+i;
+            desc_check.classList.add(classid);
+            desc_check.id = classid +'-'+i;
             if (i > 9){
                 desc_title.textContent = 'S0' + season_no + 'E' + parseInt(i+1) +': '+ data[show].seasons[season_no-1][i].name; 
             }
@@ -100,20 +113,25 @@ function drop_epi(name, det, show, season_no){
             desc_title.classList.add('episodeh3', 'small');
             desc_date.classList.add('episodeSpan', 'small');
             desc_pass.classList.add('episodeP','small');
-
-            // Marcar implement indiv check and time
-            check_box.addEventListener('click', checkMarc);
             
-            // Click an indiv checkbox time
-            const indiv_check = document.querySelectorAll('.indivtool');
-            for(let ele of indiv_check){
-                ele.addEventListener('click', marc_or_indiv_time);
+            // Indiv check
+            desc_check.addEventListener('click', onSetTime);
             }
-        }
-
-// Season Description
+            //Render checked elements
+            for(let ele of time_checked){
+                if(ele[0]==show & ele[1]==season_no & ele[2]!=-1){
+                    const check = document.querySelector('#'+classid+'-'+ele[2]);
+                    check.checked = true;              
+                }
+                else if(ele[0]==show & ele[1]==season_no & ele[2]==-1){
+                    check_box.checked = true;
+                }
+            }
+            // Marcar todo
+            check_box.addEventListener('click', checkMarc);
 }
 
+// Season drop
 function onClick(event){
     const season = event.currentTarget;
     if (season.id === 'witcher'){
@@ -152,44 +170,86 @@ function onClick(event){
 }
 
 function checkMarc(event){
-    const n = event.currentTarget;
-    console.log('Bro what');
-    const id = n.id.split('-')[1];
-    const indi = document.querySelectorAll('.indivtool');
-    for (let i of indi){
-        if (i.id.split('-')[1] == id){
-            if(n.checked == true){
-                i.checked = true;
-            }
-            else{
-                i.checked = false;
+    const marc_check = event.currentTarget;
+    
+    const m = marc_check.id.split('-')[1];
+    const n = marc_check.id.split('-')[2];
+    const indiclass = '.indivtool-'+m+'-'+n;
+    const marcid = '#marc-'+m+'-'+n;
+    const sh = parseInt(m,10);
+    const se = parseInt(n,10);
+    var index = [1,2,3,4];
+    index=[];
+
+    const indi = document.querySelectorAll(indiclass);
+    if(marc_check.checked == true){
+        for (let i of indi){
+            i.checked = true;
+        }
+        time_checked.push([sh,se,-1]);
+        for(let j=0;j<data[sh].seasons[se-1].length;j++){
+            if(time_checked.includes([sh,se,j])==false){
+                time_checked.push([sh,se,j]);
+                changeTime(sh,se,j,+1);
             }
         }
+        console.log(time_checked);
     }
-    
+    else{
+        for(let i of indi){
+            i.checked = false;
+        }
+        for(let ele of time_checked){
+            for(let k=0; k<data[sh].seasons[se-1].length;k++){
+                if(ele[0]==sh & ele[1]==se & ele[2]==k){
+                    index.push([sh,se,k]);
+                    console.log('index is accessed');
+                    changeTime(sh,se,k,-1);       
+                }  
+        }
+    }    
+        time_checked = time_checked.filter(item => {
+                for(let g of index){
+                    if(g[0] == item[0] & g[1] == item[1] & g[2] == item[2]){return false;}
+                    else if(sh == item[0] & se == item[1] & item[2] == -1){return false;}            
+                }
+                return true;
+            });    
+    }
+
 }
 
-function marc_or_indiv_time(event){
-    
+
+function onSetTime(event){
+    const indiv = event.currentTarget;
+    const m = indiv.id.split('-')[1];
+    const n = indiv.id.split('-')[2];
+    const p = indiv.id.split('-')[3];
+    const sh = parseInt(m,10);
+    const se = parseInt(n,10);
+    const ep = parseInt(p,10);
+    if(indiv.checked == true){
+        changeTime(sh,se,ep,1);
+        time_checked.push([sh,se,ep]);
+    }
+    else{
+        changeTime(sh,se,ep,-1);  
+        time_checked = time_checked.filter(item => {
+                if(sh == item[0] & se == item[1] & ep == item[2]){return false;}            
+                return true;
+            }); 
+    }
 }
 
-function onCheckTime(){
-    const times_check = event.currentTarget;
-    const show = times_check.id.split('-')[1];
-    const season = times_check.id.split('-')[2];
-    const episode = times_check.id.split('-')[3];
+function changeTime(show,season,episode,c){
     var days = parseInt(time_dhm.textContent.split(' ')[0],10);
     var hours = parseInt(time_dhm.textContent.split(' ')[2],10);
     var minutes = parseInt(time_dhm.textContent.split(' ')[4],10);
     var time = days*1440 + hours*60 + minutes;
-    if(times_check.checked == true){
-        time = time + data[show].seasons[season-1][episode].runtime;
-    }
-    else{
-        time = time - data[show].seasons[season-1][episode].runtime;
-    }
+    
+    time = time + c*data[show].seasons[season-1][episode].runtime;
 
-    var [days,hours,minutes] = min_to_dhm(time);
+    [days,hours,minutes] = min_to_dhm(time);
     time_dhm.textContent = ''+days+' days, '+hours+' hours, '+minutes+' minutes';
 }
 
