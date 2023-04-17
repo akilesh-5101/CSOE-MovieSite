@@ -77,11 +77,10 @@ class Elements{
             desc_title.classList.add('episodeh3', 'small');
             desc_date.classList.add('episodeSpan', 'small');
             desc_pass.classList.add('episodeP','small');
-            
             img.setAttribute('draggable', false);
             div_desc.setAttribute('draggable', false);
+            
             // Episode animate
-
             epi.addEventListener('mousedown', Start);
             epi.addEventListener('mousemove', Move);
             epi.addEventListener('mouseleave', End);
@@ -96,12 +95,9 @@ class Elements{
                 }
                 else if(ele[0]==this.i & ele[1]==season_no & ele[2]==-1){
                     check_eye.src = 'images/eye-green.png';
-                    removeBackground(check.firstChild);
                 }
             }
-
             // Marcar todo
-            check_eye.addEventListener('click', checkMarc);
-          
+            check_eye.addEventListener('click', checkMarc);   
      }
 }

@@ -38,18 +38,14 @@ function checkMarc(event){
     const m = marc_check.id.split('-')[1];
     const n = marc_check.id.split('-')[2];
     const indiclass = '.indivtool-'+m+'-'+n;
-    const marcid = '#marc-'+m+'-'+n;
     const sh = parseInt(m,10);
     const se = parseInt(n,10);
     var index = [1,2,3,4];
     var flag = 0;
     index=[];
-    console.log();
-
     const indi = document.querySelectorAll(indiclass);
     if(marc_check.src.split('/')[marc_check.src.split('/').length - 1] == 'eye-gray.png'){
         for (let i of indi){
-            addBackground(i.children[0]);
             i.children[1].id = 'checkImg';
         }
         marc_check.src = 'images/eye-green.png';
@@ -61,22 +57,23 @@ function checkMarc(event){
             }
             if(flag == 0){
                 Times.time_checked.push([sh,se,j]);
+                const ep = document.querySelector('#indivtool-'+sh+'-'+se+'-'+j);
+                addBackground(ep.children[0]);
                 Times.changeTime(sh,se,j,+1);
             }
         }
-        console.log(Times.time_checked);
     }
     else{
         for(let i of indi){
             i.children[1].removeAttribute('id');
-            removeBackground(i.children[0]);
         }
         marc_check.src = 'images/eye-gray.png';
         for(let ele of Times.time_checked){
             for(let k=0; k<data.data[sh].seasons[se-1].length;k++){
                 if(ele[0]==sh & ele[1]==se & ele[2]==k){
                     index.push([sh,se,k]);
-                    console.log('index is accessed');
+                    const ep2 = document.querySelector('#indivtool-'+sh+'-'+se+'-'+k);
+                    removeBackground(ep2.children[0]);
                     Times.changeTime(sh,se,k,-1);       
                 }  
         }
@@ -89,7 +86,6 @@ function checkMarc(event){
                 return true;
             });    
     }
-
 }
 
 function onSetTime(event){
@@ -103,6 +99,7 @@ function onSetTime(event){
     if(data.epi.children[1].id != 'checkImg'){
         Times.changeTime(sh,se,ep,1);
         Times.time_checked.push([sh,se,ep]);
+        console.log('Hey'+[sh,se,ep]+ 'pushed into time_checked');
     }
     else{
         Times.changeTime(sh,se,ep,-1);  
@@ -111,12 +108,10 @@ function onSetTime(event){
                 return true;
             }); 
     }
-    console.log(Times.time_checked);
 }
 
 function Start(event){
     data.startPos = event.pageX;
-    console.log(event.pageX);
     data.isDragging = true;
     data.epi = event.currentTarget;
     data.animationID = requestAnimationFrame(animation);
@@ -170,11 +165,10 @@ function addBackground(ele){
 
 function removeBackground(ele){
     const string = ele.style.backgroundImage.split(',')[8];
-    console.log(string);
-    console.log(string.slice(6,string.length-2));
     ele.src = string.slice(6,string.length-2);
     ele.style.backgroundImage = '';
     ele.style.backgroundSize = '';
+    console.log(ele.style.backgroundImage);
 
 }
 
