@@ -15,6 +15,7 @@ class Elements{
           this.div_sea_detail.classList.add('season-detail');
           this.movie.appendChild(this.div_sea_name);
           this.movie.appendChild(this.div_sea_detail);
+          
      } 
 
      drop_epi(name, det, season_no){
@@ -40,15 +41,16 @@ class Elements{
         for(let i=0;i<data.data[this.i].seasons[season_no-1].length;i++){
             const epi = document.createElement('div');
             const img = document.createElement('img');
+            const tick = document.createElement('img');
             const div_desc = document.createElement('div');
-            const desc_check = document.createElement('input');
             const desc_title = document.createElement('h3');
             const desc_date = document.createElement('span');
             const desc_pass = document.createElement('p');
+     
             img.src= data.data[this.i].seasons[season_no-1][i].image;
-            desc_check.type = 'checkbox';
-            desc_check.classList.add(classid);
-            desc_check.id = classid +'-'+i;
+            tick.src = 'images/check.png';
+
+            epi.id = classid +'-'+i;
             if (i > 9){
                 desc_title.textContent = 'S0' + season_no + 'E' + parseInt(i+1) +': '+ data.data[this.i].seasons[season_no-1][i].name; 
             }
@@ -61,35 +63,45 @@ class Elements{
 
             det.appendChild(epi);
             epi.appendChild(img);
+            epi.appendChild(tick);
             epi.appendChild(div_desc);
-            div_desc.appendChild(desc_check);
+
             div_desc.appendChild(desc_title);
             div_desc.appendChild(desc_date);
             div_desc.appendChild(desc_pass);
 
-            epi.classList.add('episode-detail');
+            epi.classList.add(classid, 'episode-detail');
+            tick.classList.add('tick');
             div_desc.classList.add('episode-desc');
             img.classList.add('episodeImg');
             desc_title.classList.add('episodeh3', 'small');
             desc_date.classList.add('episodeSpan', 'small');
             desc_pass.classList.add('episodeP','small');
             
-            // Indiv check
-            desc_check.addEventListener('click', onSetTime);
-            }
+            img.setAttribute('draggable', false);
+            div_desc.setAttribute('draggable', false);
+            // Episode animate
 
+            epi.addEventListener('mousedown', Start);
+            epi.addEventListener('mousemove', Move);
+            epi.addEventListener('mouseleave', End);
+            epi.addEventListener('mouseup', End);
+          }  
             //Render checked elements
             for(let ele of Times.time_checked){
                 if(ele[0]==this.i & ele[1]==season_no & ele[2]!=-1){
                     const check = document.querySelector('#'+classid+'-'+ele[2]);
-                    check.checked = true;              
+                    addBackground(check.firstChild);
+                    check.children[1].id = 'checkImg';             
                 }
                 else if(ele[0]==this.i & ele[1]==season_no & ele[2]==-1){
                     check_eye.src = 'images/eye-green.png';
+                    removeBackground(check.firstChild);
                 }
             }
+
             // Marcar todo
             check_eye.addEventListener('click', checkMarc);
-}
-
+          
+     }
 }

@@ -151,8 +151,28 @@ h3.small{
 	display: flex;
 	flex-direction: row;
 	margin: 15px 15px 15px 0px;
-
+	transform: translateX(0);
+	transition: transform 0.4s ease-out;
 }
+
+.episode-detail:hover {
+	transform: translateX(30px);
+}
+
+.tick{
+	display: none;
+	position: relative;
+	right: 10%;
+	top: 50px;
+	margin-left: -3%;
+	width: 32px;
+	height: 32px;
+}
+
+.tick[id]{
+	display: inline;
+}
+
 .episode-desc{
 	flex-direction: column;
 	margin: 0px 15px ;

@@ -1,14 +1,15 @@
+// class instance
 const data = new Data();
-// alert('Greetings Madam '+ emo+ '! I hereby declare that the work before you is authentic and not copied from other sources.');
+alert(data.message());
 
-// Adding event selector for dropdown for each show
+// Adding event selector for dropdown for each show(Class instances)
 const wit = new Elements('#mov0');
 const bb = new Elements('#mov1');
 const got = new Elements('#mov2');
-
+// movie array
 const mov = [wit, bb, got]; 
 
-// To show time watched
+// To show time watched, class instance
 const Times = new Time();
 
 
@@ -48,7 +49,8 @@ function checkMarc(event){
     const indi = document.querySelectorAll(indiclass);
     if(marc_check.src.split('/')[marc_check.src.split('/').length - 1] == 'eye-gray.png'){
         for (let i of indi){
-            i.checked = true;
+            addBackground(i.children[0]);
+            i.children[1].id = 'checkImg';
         }
         marc_check.src = 'images/eye-green.png';
         Times.time_checked.push([sh,se,-1]);
@@ -66,7 +68,8 @@ function checkMarc(event){
     }
     else{
         for(let i of indi){
-            i.checked = false;
+            i.children[1].removeAttribute('id');
+            removeBackground(i.children[0]);
         }
         marc_check.src = 'images/eye-gray.png';
         for(let ele of Times.time_checked){
@@ -97,7 +100,7 @@ function onSetTime(event){
     const sh = parseInt(m,10);
     const se = parseInt(n,10);
     const ep = parseInt(p,10);
-    if(indiv.checked == true){
+    if(data.epi.children[1].id != 'checkImg'){
         Times.changeTime(sh,se,ep,1);
         Times.time_checked.push([sh,se,ep]);
     }
@@ -111,4 +114,67 @@ function onSetTime(event){
     console.log(Times.time_checked);
 }
 
+function Start(event){
+    data.startPos = event.pageX;
+    console.log(event.pageX);
+    data.isDragging = true;
+    data.epi = event.currentTarget;
+    data.animationID = requestAnimationFrame(animation);
+    // data.epi.children[1].style.backgroundImage = `linear-gradient(rgba(0, 255, 0, .3),rgba(0, 255, 0, .3)) url(${data.epi.children[1].style.backgroundImage}) no-repeat`;
+}
+
+function End(event){
+    const ep = event.currentTarget;
+    if (data.isDragging == true ){
+        cancelAnimationFrame(data.animationID);
+        data.isDragging = false;
+        if(data.currentTranslate >= screen.width/10){
+            onSetTime(event);
+            if(data.epi.children[1].id == 'checkImg'){
+                data.epi.children[1].removeAttribute('id');
+                removeBackground(data.epi.children[0]);
+            }
+            else{
+                addBackground(data.epi.children[0]);
+                data.epi.children[1].id = 'checkImg';
+            }
+        }
+    
+        data.currentTranslate = 0;
+        event.currentTarget.style.transform = `translateX(${data.currentTranslate}px)`;
+    }
+}
+
+function Move(event){
+    if(data.isDragging){
+        const currentPosition = event.pageX;
+        data.currentTranslate = Math.min(data.prevTranslate + currentPosition - data.startPos, screen.width/10);
+    }
+}
+
+function animation() {
+   setSliderPosition();
+   if(data.isDragging) requestAnimationFrame(animation);
+}
+
+function setSliderPosition(){
+  data.epi.style.transform = `translateX(${data.currentTranslate}px)`;  
+  
+}
+
+function addBackground(ele){
+    ele.style.backgroundImage = `linear-gradient(rgba(0, 255, 0, .5), rgba(0, 255, 0, .5)), url(${ele.src})`;
+    ele.style.backgroundSize = "100% 140px";
+    ele.src = '';
+}
+
+function removeBackground(ele){
+    const string = ele.style.backgroundImage.split(',')[8];
+    console.log(string);
+    console.log(string.slice(6,string.length-2));
+    ele.src = string.slice(6,string.length-2);
+    ele.style.backgroundImage = '';
+    ele.style.backgroundSize = '';
+
+}
 
